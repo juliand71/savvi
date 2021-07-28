@@ -23,6 +23,7 @@ Funds are basically like a bank account, they are created with a starting balanc
 Expenses are transactions that subtract from the balance of a fund, the structure of an expense will be
 
 {
+  "fundId": string,
   "amount": number,
   "note": string
 }
