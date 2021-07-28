@@ -6,12 +6,10 @@ import fsdb from "./fsdb";
  */
 export const createUser =
 functions.https.onRequest(async (request, response) => {
-  const username = request.body.username;
+  const user = request.body.user;
   const userRef = fsdb.collection("users").doc();
   try {
-    await userRef.set({
-      name: username,
-    });
+    await userRef.set(user);
     response.send(`Created user with id ${userRef.id}`);
   } catch (error) {
     console.log(error);
@@ -25,15 +23,10 @@ functions.https.onRequest(async (request, response) => {
 export const getUser =
 functions.https.onRequest(async (request, response) => {
   const userId = request.query.id;
-  console.log(userId);
   const userRef = fsdb.doc(`users/${userId}`);
   try {
     const userDoc = await userRef.get();
-    if (userDoc.exists) {
-      response.send(userDoc.data());
-    } else {
-      response.status(500).send("User not found");
-    }
+    response.send(userDoc.data());
   } catch (error) {
     response.status(500).send(error);
   }
@@ -46,35 +39,26 @@ functions.https.onRequest(async (request, response) => {
 export const updateUser =
 functions.https.onRequest(async (request, response) => {
   const userId = request.query.id;
-  console.log(userId);
   const userData = request.body.updates;
   const userRef = fsdb.doc(`users/${userId}`);
   try {
-    const userDoc = await userRef.get();
-    if (userDoc.exists) {
-      await userRef.update(userData);
-      response.send(`Updated user with id ${userId} -- added ${userData}`);
-    } else {
-      response.status(500).send("User not found");
-    }
+    await userRef.update(userData);
+    response.send(`Updated user with id ${userId} -- added ${userData}`);
   } catch (error) {
     response.status(500).send(error);
   }
 });
 
+/**
+ * Delete a user
+ */
 export const deleteUser =
 functions.https.onRequest(async (request, response) => {
   const userId = request.query.id;
-  console.log(userId);
   const userRef = fsdb.doc(`users/${userId}`);
   try {
-    const userDoc = await userRef.get();
-    if (userDoc.exists) {
-      await userRef.delete();
-      response.send(`Deleted user with id ${userId}`);
-    } else {
-      response.status(500).send("User not found");
-    }
+    await userRef.delete();
+    response.send(`Deleted user with id ${userId}`);
   } catch (error) {
     response.status(500).send(error);
   }
